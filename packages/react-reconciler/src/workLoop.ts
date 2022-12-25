@@ -3,19 +3,19 @@ import { createWorkInProgress, FiberNode, FiberRootNode } from './fiber'
 import { beginWork } from './beginWork'
 import { completeWork } from './completeWork'
 
-let workInProgress: FiberNode<any> | null = null
+let workInProgress: FiberNode | null = null
 
-function prepareFreshStack<S>(root: FiberRootNode<S>) {
+function prepareFreshStack(root: FiberRootNode) {
   workInProgress = createWorkInProgress(root.current, {})
 }
 
-export function scheduleUpdateOnFiber<S>(fiber: FiberNode<S>) {
+export function scheduleUpdateOnFiber(fiber: FiberNode) {
   // FiberRootNode
   const root = markUpdateFromFiberToRoot(fiber)
-  renderRoot(root as FiberRootNode<S>)
+  renderRoot(root as FiberRootNode)
 }
 
-function markUpdateFromFiberToRoot<S>(fiber: FiberNode<S>) {
+function markUpdateFromFiberToRoot(fiber: FiberNode) {
   let node = fiber
   let parent = node.return
 
@@ -30,7 +30,7 @@ function markUpdateFromFiberToRoot<S>(fiber: FiberNode<S>) {
   return null
 }
 
-export function renderRoot<S>(root: FiberRootNode<S>) {
+export function renderRoot(root: FiberRootNode) {
   // 初始化 ( 让全局 workInProgress 指向第一个需要处理的 FiberNode )
   prepareFreshStack(root)
 
@@ -51,7 +51,7 @@ function workLoop() {
   }
 }
 
-function performUnitOfWork<S>(fiber: FiberNode<S>) {
+function performUnitOfWork(fiber: FiberNode) {
   const next = beginWork(fiber)
   fiber.memoizedProps = fiber.pendingProps
 
@@ -62,8 +62,8 @@ function performUnitOfWork<S>(fiber: FiberNode<S>) {
   }
 }
 
-function completeUnitOfWork<S>(fiber: FiberNode<S>) {
-  let node: FiberNode<S> | null = fiber
+function completeUnitOfWork(fiber: FiberNode) {
+  let node: FiberNode | null = fiber
   do {
     completeWork(node)
     const sibling = node.sibling

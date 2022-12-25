@@ -5,23 +5,23 @@ import { Flags, NoFlags } from './fiberFlags'
 import { Container } from 'hostConfig'
 import type { ClassElement } from 'typescript'
 
-export class FiberNode<S> {
+export class FiberNode {
   tag: WorkTag
   key: Key
-  stateNode: FiberRootNode<S> | HTMLElement | null
-  type: null | ((...args: any[]) => FiberNode<S> | null) | ClassElement
+  stateNode: FiberRootNode | HTMLElement | null
+  type: null | ((...args: any[]) => FiberNode | null) | ClassElement
   ref: Ref
 
-  return: null | FiberNode<S>
-  sibling: null | FiberNode<S>
-  child: null | FiberNode<S>
+  return: null | FiberNode
+  sibling: null | FiberNode
+  child: null | FiberNode
   index: number
 
   pendingProps: Props
   memoizedProps: null | Props
-  memoizedState: null | S
-  updateQueue: null | UpdateQueue<S>
-  alternate: null | FiberNode<S>
+  memoizedState: any
+  updateQueue: null | UpdateQueue<any>
+  alternate: null | FiberNode
   flags: Flags
 
   constructor(tag: WorkTag, pendingProps: Props, key: Key) {
@@ -49,11 +49,11 @@ export class FiberNode<S> {
   }
 }
 
-export class FiberRootNode<S> {
+export class FiberRootNode {
   container: Container
-  current: FiberNode<S>
-  finishedWork: FiberNode<S> | null // 调度完成的 HostRootFiber
-  constructor(container: FiberNode<S>, hostRootFiber: FiberNode<S>) {
+  current: FiberNode
+  finishedWork: FiberNode | null // 调度完成的 HostRootFiber
+  constructor(container: FiberNode, hostRootFiber: FiberNode) {
     this.container = container
     this.current = hostRootFiber
     hostRootFiber.stateNode = this
@@ -61,10 +61,10 @@ export class FiberRootNode<S> {
   }
 }
 
-export function createWorkInProgress<S>(
-  current: FiberNode<S>,
+export function createWorkInProgress(
+  current: FiberNode,
   pendingProps: Props,
-): FiberNode<S> {
+): FiberNode {
   let wip = current.alternate
 
   if (wip === null) {

@@ -20,7 +20,7 @@ export function createContainer(container: Container) {
 
 export function updateContainer<S>(
   element: ReactElement | null,
-  root: FiberRootNode<S>,
+  root: FiberRootNode,
 ) {
   const hostRootFiber = root.current
   const update = createUpdate(element) as Update<S | null>
