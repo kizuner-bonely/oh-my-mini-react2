@@ -36,5 +36,8 @@
       "npm run lint:script",
       "git add ."
     ]
+  },
+  "dependencies": {
+    "@rollup/plugin-replace": "^5.0.2"
   }
 }

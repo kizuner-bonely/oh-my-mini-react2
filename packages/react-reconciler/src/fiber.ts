@@ -1,8 +1,10 @@
-import { UpdateQueue } from './updateQueue'
-import { Props, Key, Ref } from 'shared/ReactTypes'
-import { WorkTag } from './workTags'
-import { Flags, NoFlags } from './fiberFlags'
 import { Container } from 'hostConfig'
+import { Props, Key, Ref } from 'shared/ReactTypes'
+import { FunctionComponent, HostComponent, WorkTag } from './workTags'
+import { UpdateQueue } from './updateQueue'
+import { Flags, NoFlags } from './fiberFlags'
+import { ReactElement } from './../../shared/ReactTypes'
+
 import type { ClassElement } from 'typescript'
 
 export class FiberNode {
@@ -86,4 +88,19 @@ export function createWorkInProgress(
   wip.memoizedState = current.memoizedState
 
   return wip
+}
+
+export function createFiberFromElement(element: ReactElement) {
+  const { type, key, props } = element
+  let fiberTag: WorkTag = FunctionComponent
+
+  if (typeof type === 'string') {
+    fiberTag = HostComponent
+  } else if (typeof type !== 'function' && __DEV__) {
+    console.warn('未定义的type类型', element)
+  }
+
+  const fiber = new FiberNode(fiberTag, props, key)
+  fiber.type = type
+  return fiber
 }
