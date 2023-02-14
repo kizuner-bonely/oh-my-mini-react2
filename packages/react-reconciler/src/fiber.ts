@@ -25,6 +25,7 @@ export class FiberNode {
   updateQueue: null | UpdateQueue<any>
   alternate: null | FiberNode
   flags: Flags
+  subtreeFlags: Flags
 
   constructor(tag: WorkTag, pendingProps: Props, key: Key) {
     //* 实例属性 ( ReactElement )
@@ -48,6 +49,7 @@ export class FiberNode {
 
     this.alternate = null
     this.flags = NoFlags // 副作用
+    this.subtreeFlags = NoFlags
   }
 }
 
@@ -80,6 +82,7 @@ export function createWorkInProgress(
     // update
     wip.pendingProps = pendingProps
     wip.flags = NoFlags
+    wip.subtreeFlags = NoFlags
   }
   wip.type = current.type
   wip.child = current.child
