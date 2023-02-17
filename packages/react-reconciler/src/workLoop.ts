@@ -1,8 +1,9 @@
 import { MutationMask, NoFlags } from './fiberFlags'
 import { HostRoot } from './workTags'
-import { createWorkInProgress, FiberNode, FiberRootNode } from './fiber'
 import { beginWork } from './beginWork'
 import { completeWork } from './completeWork'
+import { commitMutationEffects } from './commitWork'
+import { createWorkInProgress, FiberNode, FiberRootNode } from './fiber'
 
 let workInProgress: FiberNode | null = null
 
@@ -70,6 +71,7 @@ function commitRoot(root: FiberRootNode) {
   if (subtreeHasEffect || rootHasEffect) {
     // 1.beforeMutation
     // 2.mutation (Placement)
+    commitMutationEffects(finishedWork)
     root.current = finishedWork
     // 3.layout
   } else {
