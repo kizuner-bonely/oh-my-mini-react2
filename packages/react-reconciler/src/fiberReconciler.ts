@@ -1,3 +1,4 @@
+import { Container } from 'hostConfig'
 import { ReactElement } from 'shared/ReactTypes'
 import {
   createUpdate,
@@ -8,7 +9,6 @@ import {
 } from './updateQueue'
 import { HostRoot } from './workTags'
 import { FiberNode, FiberRootNode } from './fiber'
-import { Container } from './hostConfig'
 import { scheduleUpdateOnFiber } from './workLoop'
 
 export function createContainer(container: Container) {

@@ -4,14 +4,14 @@ import { FunctionComponent, HostComponent, WorkTag } from './workTags'
 import { UpdateQueue } from './updateQueue'
 import { Flags, NoFlags } from './fiberFlags'
 import { ReactElement } from './../../shared/ReactTypes'
-
 import type { ClassElement } from 'typescript'
 
 export class FiberNode {
   tag: WorkTag
   key: Key
-  stateNode: FiberRootNode | HTMLElement | null
-  type: null | ((...args: any[]) => FiberNode | null) | ClassElement
+  stateNode: FiberRootNode | HTMLElement | Text | null
+  type: null | ((...args: any[]) => FiberNode | null) | ClassElement | string
+  // type: string
   ref: Ref
 
   return: null | FiberNode
@@ -57,7 +57,7 @@ export class FiberRootNode {
   container: Container
   current: FiberNode
   finishedWork: FiberNode | null // 调度完成的 HostRootFiber
-  constructor(container: FiberNode, hostRootFiber: FiberNode) {
+  constructor(container: Container, hostRootFiber: FiberNode) {
     this.container = container
     this.current = hostRootFiber
     hostRootFiber.stateNode = this

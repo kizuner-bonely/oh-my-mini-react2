@@ -18,6 +18,12 @@ export function getPackageJSON(name) {
 }
 
 export function getBaseRollupPlugins(props = {}) {
-  const { typescriptConfig = {}, alias = { __DEV__: true } } = props
+  const {
+    typescriptConfig = {},
+    alias = {
+      __DEV__: true,
+      preventAssignment: true,
+    },
+  } = props
   return [replace(alias), cjs(), ts(typescriptConfig)]
 }
