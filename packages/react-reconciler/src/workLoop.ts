@@ -52,7 +52,6 @@ export function renderRoot(root: FiberRootNode) {
   commitRoot(root)
 }
 
-// TODO
 function commitRoot(root: FiberRootNode) {
   const finishedWork = root.finishedWork
   if (!finishedWork) return
