@@ -1,8 +1,14 @@
 import { ReactElement } from 'shared/ReactTypes'
 import { FiberNode } from './fiber'
 import { processUpdateQueue, UpdateQueue } from './updateQueue'
-import { HostRoot, HostComponent, HostText } from './workTags'
+import {
+  HostRoot,
+  HostComponent,
+  HostText,
+  FunctionComponent,
+} from './workTags'
 import { mountChildFibers, reconcileChildFibers } from './childFibers'
+import { renderWithHooks } from './fiberHooks'
 
 export const beginWork = (wip: FiberNode): FiberNode | null => {
   switch (wip.tag) {
@@ -13,6 +19,8 @@ export const beginWork = (wip: FiberNode): FiberNode | null => {
     case HostText:
       // 文本节点没有子节点
       return null
+    case FunctionComponent:
+      return updateFunctionComponent(wip)
   }
 
   if (__DEV__) {
@@ -20,6 +28,12 @@ export const beginWork = (wip: FiberNode): FiberNode | null => {
   }
 
   return null
+}
+
+function updateFunctionComponent(wip: FiberNode) {
+  const nextChildren = renderWithHooks(wip)
+  reconcileChildren(wip, nextChildren!)
+  return wip.child
 }
 
 function updateHostRoot(wip: FiberNode) {
@@ -43,7 +57,7 @@ function updateHostComponent(wip: FiberNode) {
   return wip.child
 }
 
-function reconcileChildren(wip: FiberNode, children?: ReactElement) {
+function reconcileChildren(wip: FiberNode, children?: ReactElement | null) {
   const current = wip.alternate
 
   if (current) {

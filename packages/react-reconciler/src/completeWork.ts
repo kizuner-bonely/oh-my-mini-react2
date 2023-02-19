@@ -5,7 +5,12 @@ import {
   createTextInstance,
   Instance,
 } from 'hostConfig'
-import { HostComponent, HostText, HostRoot } from './workTags'
+import {
+  HostComponent,
+  HostText,
+  HostRoot,
+  FunctionComponent,
+} from './workTags'
 import { NoFlags } from './fiberFlags'
 import { FiberNode } from './fiber'
 
@@ -41,6 +46,9 @@ export const completeWork = (wip: FiberNode) => {
       bubbleProperties(wip)
       return null
     case HostRoot:
+      bubbleProperties(wip)
+      return null
+    case FunctionComponent:
       bubbleProperties(wip)
       return null
     default:

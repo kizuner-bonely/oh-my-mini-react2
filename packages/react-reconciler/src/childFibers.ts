@@ -37,7 +37,7 @@ function ChildReconciler(shouldTrackEffects: boolean) {
   return function reconcileChildFibers(
     returnFiber: FiberNode,
     currentFiber: FiberNode | null,
-    newChild?: ReactElement,
+    newChild?: ReactElement | null,
   ) {
     //* 判断当前 Fiber 类型
     if (typeof newChild === 'object' && newChild !== null) {

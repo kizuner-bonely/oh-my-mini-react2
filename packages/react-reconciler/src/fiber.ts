@@ -6,11 +6,13 @@ import { Flags, NoFlags } from './fiberFlags'
 import { ReactElement } from './../../shared/ReactTypes'
 import type { ClassElement } from 'typescript'
 
+export type FunctionComponentType = (...args: any[]) => ReactElement | null
+
 export class FiberNode {
   tag: WorkTag
   key: Key
   stateNode: FiberRootNode | HTMLElement | Text | null
-  type: null | ((...args: any[]) => FiberNode | null) | ClassElement | string
+  type: null | FunctionComponentType | ClassElement | string
   // type: string
   ref: Ref
 
