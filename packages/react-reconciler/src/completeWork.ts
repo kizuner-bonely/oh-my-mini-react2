@@ -11,8 +11,12 @@ import {
   HostRoot,
   FunctionComponent,
 } from './workTags'
-import { NoFlags } from './fiberFlags'
+import { NoFlags, Update } from './fiberFlags'
 import { FiberNode } from './fiber'
+
+function markUpdate(fiber: FiberNode) {
+  fiber.flags |= Update
+}
 
 export const completeWork = (wip: FiberNode) => {
   const newProps = wip.pendingProps
@@ -21,7 +25,7 @@ export const completeWork = (wip: FiberNode) => {
   switch (wip.tag) {
     case HostComponent:
       if (current !== null && wip.stateNode) {
-        // update
+        // TODO update
       } else {
         // mount
         // 1.构建 DOM
@@ -35,6 +39,11 @@ export const completeWork = (wip: FiberNode) => {
     case HostText:
       if (current !== null && wip.stateNode) {
         // update
+        const oldText = current.memoizedProps?.content
+        const newText = newProps.content
+        if (oldText !== newText) {
+          markUpdate(wip)
+        }
       } else {
         // mount
         // 1.构建 DOM

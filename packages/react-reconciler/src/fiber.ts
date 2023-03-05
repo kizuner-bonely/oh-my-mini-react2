@@ -25,6 +25,7 @@ export class FiberNode {
   memoizedProps: null | Props
   memoizedState: any
   updateQueue: null | UpdateQueue<any>
+  deletions: FiberNode[] | null
   alternate: null | FiberNode
   flags: Flags
   subtreeFlags: Flags
@@ -48,10 +49,12 @@ export class FiberNode {
     this.memoizedProps = null
     this.updateQueue = null
     this.memoizedState = null
-
     this.alternate = null
-    this.flags = NoFlags // 副作用
+
+    //* 副作用
+    this.flags = NoFlags
     this.subtreeFlags = NoFlags
+    this.deletions = null
   }
 }
 
@@ -85,6 +88,7 @@ export function createWorkInProgress(
     wip.pendingProps = pendingProps
     wip.flags = NoFlags
     wip.subtreeFlags = NoFlags
+    wip.deletions = null
   }
   wip.type = current.type
   wip.child = current.child
