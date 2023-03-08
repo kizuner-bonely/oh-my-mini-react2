@@ -42,6 +42,9 @@ export function renderWithHooks(wip: FiberNode) {
   const children = (Component as FunctionComponentType)(props)
 
   currentlyRenderingFiber = null
+  workInProgressHook = null
+  currentHook = null
+
   return children
 }
 
