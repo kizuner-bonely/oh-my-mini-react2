@@ -1,3 +1,4 @@
+import { DOMElement, updateFiberProps } from 'react-dom/src/SynthesisEvent'
 import {
   appendInitialChild,
   Container,
@@ -25,7 +26,9 @@ export const completeWork = (wip: FiberNode) => {
   switch (wip.tag) {
     case HostComponent:
       if (current !== null && wip.stateNode) {
-        // TODO update
+        // 1.判断 props 是否变化
+        // 2.如果发生变化，打上 Update 标记
+        updateFiberProps(wip.stateNode as DOMElement, newProps)
       } else {
         // mount
         // 1.构建 DOM

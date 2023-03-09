@@ -1,5 +1,6 @@
 import { Container } from 'hostConfig'
 import { Props, Key, Ref } from 'shared/ReactTypes'
+import { DOMElement } from 'react-dom/src/SynthesisEvent'
 import { FunctionComponent, HostComponent, WorkTag } from './workTags'
 import { UpdateQueue } from './updateQueue'
 import { Flags, NoFlags } from './fiberFlags'
@@ -11,7 +12,7 @@ export type FunctionComponentType = (...args: any[]) => ReactElement | null
 export class FiberNode {
   tag: WorkTag
   key: Key
-  stateNode: FiberRootNode | HTMLElement | Text | null
+  stateNode: FiberRootNode | HTMLElement | Text | DOMElement | null
   type: null | FunctionComponentType | ClassElement | string
   // type: string
   ref: Ref

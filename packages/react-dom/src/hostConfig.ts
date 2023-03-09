@@ -1,3 +1,4 @@
+import { DOMElement, updateFiberProps } from './SynthesisEvent'
 /* eslint-disable no-case-declarations */
 import { HostText } from 'react-reconciler/src/workTags'
 import { FiberNode } from 'react-reconciler/src/fiber'
@@ -7,8 +8,8 @@ export type Instance = Element
 export type TextInstance = Text
 
 export const createInstance = (type: string, props: Record<string, any>) => {
-  // TODO
-  const element = document.createElement(type)
+  const element = document.createElement(type) as unknown as DOMElement
+  updateFiberProps(element, props)
   return element
 }
 
