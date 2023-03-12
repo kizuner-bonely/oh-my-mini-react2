@@ -196,7 +196,7 @@ function ChildReconciler(shouldTrackEffects: boolean) {
     }
 
     // ReactElement
-    if (typeof element === 'object' && element) {
+    if (typeof element === 'object' && element !== null) {
       switch (element.$$typeof) {
         case REACT_ELEMENT_TYPE:
           if (before) {
@@ -224,7 +224,11 @@ function ChildReconciler(shouldTrackEffects: boolean) {
     newChild?: ReactElement | null,
   ) {
     //* 判断当前 Fiber 类型
-    if (typeof newChild === 'object' && newChild !== null) {
+    if (
+      typeof newChild === 'object' &&
+      !Array.isArray(newChild) &&
+      newChild !== null
+    ) {
       switch (newChild.$$typeof) {
         case REACT_ELEMENT_TYPE:
           return placeSingleChild(
@@ -238,7 +242,7 @@ function ChildReconciler(shouldTrackEffects: boolean) {
       }
     }
 
-    // TODO 多节点
+    // 多节点
     if (Array.isArray(newChild)) {
       return reconcileChildrenArray(returnFiber, currentFiber, newChild)
     }

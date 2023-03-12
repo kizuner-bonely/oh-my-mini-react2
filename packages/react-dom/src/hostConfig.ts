@@ -51,3 +51,11 @@ export const removeChild = (
 ) => {
   container.removeChild(child)
 }
+
+export function insertChildIntoContainer(
+  child: Instance,
+  container: Container,
+  before: Instance,
+) {
+  container.insertBefore(child, before)
+}
