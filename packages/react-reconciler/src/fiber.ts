@@ -1,7 +1,7 @@
 import { Container } from 'hostConfig'
 import { Props, Key, Ref } from 'shared/ReactTypes'
 import { DOMElement } from 'react-dom/src/SynthesisEvent'
-import { FunctionComponent, HostComponent, WorkTag } from './workTags'
+import { Fragment, FunctionComponent, HostComponent, WorkTag } from './workTags'
 import { UpdateQueue } from './updateQueue'
 import { Flags, NoFlags } from './fiberFlags'
 import { ReactElement } from './../../shared/ReactTypes'
@@ -34,7 +34,7 @@ export class FiberNode {
   constructor(tag: WorkTag, pendingProps: Props, key: Key) {
     //* 实例属性 ( ReactElement )
     this.tag = tag
-    this.key = key
+    this.key = key ?? null
     this.stateNode = null // <div></div>
     this.type = null // FunctionComponent -> function() {}
     this.ref = null
@@ -113,4 +113,8 @@ export function createFiberFromElement(element: ReactElement) {
   const fiber = new FiberNode(fiberTag, props, key)
   fiber.type = type
   return fiber
+}
+
+export function createFiberFromFragment(elements: any[], key: Key) {
+  return new FiberNode(Fragment, elements, key)
 }

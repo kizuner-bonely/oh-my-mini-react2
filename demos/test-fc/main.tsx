@@ -11,7 +11,17 @@ function App() {
       ? [<li key="1">1</li>, <li key="2">2</li>, <li key="3">3</li>]
       : [<li key="3">3</li>, <li key="2">2</li>, <li key="1">1</li>]
 
-  return <ul onClickCapture={() => setNum(n => n + 1)}>{arr}</ul>
+  const jsx = (
+    <ul onClickCapture={() => setNum(n => n + 1)}>
+      <li>5</li>
+      <li>6</li>
+      <li>{num}</li>
+      {arr}
+    </ul>
+  )
+
+  return jsx
+  // return <ul onClickCapture={() => setNum(n => n + 1)}>{arr}</ul>
 }
 
 // function Child() {

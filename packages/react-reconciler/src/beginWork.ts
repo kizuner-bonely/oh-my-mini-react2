@@ -6,6 +6,7 @@ import {
   HostComponent,
   HostText,
   FunctionComponent,
+  Fragment,
 } from './workTags'
 import { mountChildFibers, reconcileChildFibers } from './childFibers'
 import { renderWithHooks } from './fiberHooks'
@@ -21,6 +22,8 @@ export const beginWork = (wip: FiberNode): FiberNode | null => {
       return null
     case FunctionComponent:
       return updateFunctionComponent(wip)
+    case Fragment:
+      return updateFragment(wip)
   }
 
   if (__DEV__) {
@@ -28,6 +31,12 @@ export const beginWork = (wip: FiberNode): FiberNode | null => {
   }
 
   return null
+}
+
+function updateFragment(wip: FiberNode) {
+  const nextChildren = wip.pendingProps
+  reconcileChildren(wip, nextChildren as ReactElement)
+  return wip.child
 }
 
 function updateFunctionComponent(wip: FiberNode) {

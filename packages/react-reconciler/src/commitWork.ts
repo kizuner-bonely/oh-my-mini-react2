@@ -60,28 +60,24 @@ function commitMutationEffectsOnFiber(finishedWork: FiberNode) {
     const deletions = finishedWork.deletions
     if (deletions) {
       deletions.forEach(childToDelete => {
-        commitDelete(childToDelete)
+        commitDeletion(childToDelete)
       })
     }
   }
 }
 
-function commitDelete(childToDelete: FiberNode) {
-  let rootHostNode: FiberNode | null = null
+function commitDeletion(childToDelete: FiberNode) {
+  const rootChildrenToDelete: FiberNode[] = []
 
   // 递归
   commitNestedComponent(childToDelete, unmountFiber => {
     switch (unmountFiber.tag) {
       case HostComponent:
-        if (rootHostNode === null) {
-          rootHostNode = unmountFiber
-        }
+        recordHostChildrenToDelete(rootChildrenToDelete, unmountFiber)
         // TODO 解绑 ref
         break
       case HostText:
-        if (rootHostNode === null) {
-          rootHostNode = unmountFiber
-        }
+        recordHostChildrenToDelete(rootChildrenToDelete, unmountFiber)
         break
       case FunctionComponent:
         // TODO useEffect unmount
@@ -95,17 +91,37 @@ function commitDelete(childToDelete: FiberNode) {
   })
 
   // 移除对应 DOM
-  if (rootHostNode) {
+  if (rootChildrenToDelete.length) {
     const hostParent = getHostParent(childToDelete)
     if (hostParent) {
-      removeChild(
-        (rootHostNode as FiberNode).stateNode as Element | Text,
-        hostParent,
-      )
+      rootChildrenToDelete.forEach(node => {
+        removeChild(node.stateNode as Element | Text, hostParent)
+      })
     }
   }
   childToDelete.return = null
   childToDelete.child = null
+}
+
+function recordHostChildrenToDelete(
+  childrenToDelete: FiberNode[],
+  unmountFiber: FiberNode,
+) {
+  // 1.找到第一个 host 节点
+  const lastOne = childrenToDelete[childrenToDelete.length - 1]
+
+  if (!lastOne) {
+    childrenToDelete.push(unmountFiber)
+  } else {
+    let node = lastOne.sibling
+    while (node) {
+      if (unmountFiber === node) {
+        childrenToDelete.push(unmountFiber)
+      }
+      node = node.sibling
+    }
+  }
+  // 2.每找到一个 host 节点，就判断该节点是不是第一步找到的节点的兄弟节点
 }
 
 function commitNestedComponent(
