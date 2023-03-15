@@ -4,6 +4,7 @@ import { beginWork } from './beginWork'
 import { completeWork } from './completeWork'
 import { commitMutationEffects } from './commitWork'
 import { createWorkInProgress, FiberNode, FiberRootNode } from './fiber'
+import { Lane, mergeLanes } from './fiberLanes'
 
 let workInProgress: FiberNode | null = null
 
@@ -11,10 +12,15 @@ function prepareFreshStack(root: FiberRootNode) {
   workInProgress = createWorkInProgress(root.current, {})
 }
 
-export function scheduleUpdateOnFiber(fiber: FiberNode) {
+export function scheduleUpdateOnFiber(fiber: FiberNode, lane: Lane) {
   // FiberRootNode
   const root = markUpdateFromFiberToRoot(fiber)
+  markRootUpdated(root, lane)
   renderRoot(root as FiberRootNode)
+}
+
+function markRootUpdated(root: FiberRootNode, lane: Lane) {
+  root.pendingLanes = mergeLanes(root.pendingLanes, lane)
 }
 
 function markUpdateFromFiberToRoot(fiber: FiberNode) {

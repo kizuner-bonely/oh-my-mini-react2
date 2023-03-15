@@ -10,6 +10,7 @@ import {
   processUpdateQueue,
   UpdateQueue,
 } from './updateQueue'
+import { requestUpdateLanes } from './fiberLanes'
 
 const { currentDispatcher } = internals
 
@@ -100,9 +101,10 @@ function dispatchSetState<State>(
   updateQueue: UpdateQueue<State>,
   action: Action<State>,
 ) {
-  const update = createUpdate(action)
+  const lane = requestUpdateLanes()
+  const update = createUpdate(action, lane)
   enqueueUpdate(updateQueue, update)
-  scheduleUpdateOnFiber(fiber)
+  scheduleUpdateOnFiber(fiber, lane)
 }
 
 function mountWorkInProgressHook(): Hook {

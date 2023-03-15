@@ -5,6 +5,7 @@ import { Fragment, FunctionComponent, HostComponent, WorkTag } from './workTags'
 import { UpdateQueue } from './updateQueue'
 import { Flags, NoFlags } from './fiberFlags'
 import { ReactElement } from './../../shared/ReactTypes'
+import { Lane, Lanes, NoLane, NoLanes } from './fiberLanes'
 import type { ClassElement } from 'typescript'
 
 export type FunctionComponentType = (...args: any[]) => ReactElement | null
@@ -63,11 +64,15 @@ export class FiberRootNode {
   container: Container
   current: FiberNode
   finishedWork: FiberNode | null // 调度完成的 HostRootFiber
+  pendingLanes: Lanes
+  finishedLane: Lane
   constructor(container: Container, hostRootFiber: FiberNode) {
     this.container = container
     this.current = hostRootFiber
     hostRootFiber.stateNode = this
     this.finishedWork = null
+    this.pendingLanes = NoLanes
+    this.finishedLane = NoLane
   }
 }
 
