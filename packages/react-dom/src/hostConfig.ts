@@ -3,6 +3,8 @@ import { DOMElement, updateFiberProps } from './SynthesisEvent'
 import { HostText } from 'react-reconciler/src/workTags'
 import { FiberNode } from 'react-reconciler/src/fiber'
 
+type Callback = (...args: any[]) => void
+
 export type Container = Element
 export type Instance = Element
 export type TextInstance = Text
@@ -59,3 +61,10 @@ export function insertChildIntoContainer(
 ) {
   container.insertBefore(child, before)
 }
+
+export const scheduleMicroTask =
+  typeof queueMicrotask === 'function'
+    ? queueMicrotask
+    : typeof Promise === 'function'
+    ? (callback: Callback) => Promise.resolve().then(callback)
+    : setTimeout
