@@ -10,13 +10,14 @@ import {
   processUpdateQueue,
   UpdateQueue,
 } from './updateQueue'
-import { requestUpdateLanes } from './fiberLanes'
+import { Lane, NoLane, requestUpdateLanes } from './fiberLanes'
 
 const { currentDispatcher } = internals
 
 let currentlyRenderingFiber: FiberNode | null = null
 let workInProgressHook: Hook | null = null
 let currentHook: Hook | null = null
+let renderLane: Lane = NoLane
 
 interface Hook {
   memoizedState: any
@@ -24,9 +25,10 @@ interface Hook {
   next: Hook | null
 }
 
-export function renderWithHooks(wip: FiberNode) {
+export function renderWithHooks(wip: FiberNode, lane: Lane) {
   currentlyRenderingFiber = wip
   wip.memoizedState = null
+  renderLane = lane
 
   const current = wip.alternate
 
@@ -45,6 +47,7 @@ export function renderWithHooks(wip: FiberNode) {
   currentlyRenderingFiber = null
   workInProgressHook = null
   currentHook = null
+  renderLane = NoLane
 
   return children
 }
@@ -89,7 +92,11 @@ function updateState<State>(): [State, Dispatch<State>] {
   const pending = queue.shared.pending
 
   if (pending) {
-    const { memoizedState } = processUpdateQueue(hook.memoizedState, pending)
+    const { memoizedState } = processUpdateQueue(
+      hook.memoizedState,
+      pending,
+      renderLane,
+    )
     hook.memoizedState = memoizedState
   }
 

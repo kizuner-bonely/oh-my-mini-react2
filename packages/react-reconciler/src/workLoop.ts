@@ -7,6 +7,7 @@ import { createWorkInProgress, FiberNode, FiberRootNode } from './fiber'
 import {
   getHighestPriorityLane,
   Lane,
+  markRootFinished,
   mergeLanes,
   NoLane,
   SyncLane,
@@ -15,9 +16,11 @@ import { flushSyncCallbacks, scheduleSyncCallback } from './syncTaskQueue'
 import { scheduleMicroTask } from 'hostConfig'
 
 let workInProgress: FiberNode | null = null
+let wipRootRenderLane: Lane = NoLane
 
-function prepareFreshStack(root: FiberRootNode) {
+function prepareFreshStack(root: FiberRootNode, lane: Lane) {
   workInProgress = createWorkInProgress(root.current, {})
+  wipRootRenderLane = lane
 }
 
 export function scheduleUpdateOnFiber(fiber: FiberNode, lane: Lane) {
@@ -69,8 +72,12 @@ function performSyncWorkOnRoot(root: FiberRootNode, lane: Lane) {
     return ensureRootIsScheduled(root)
   }
 
+  if (__DEV__) {
+    console.warn('render 阶段开始')
+  }
+
   // 初始化 ( 让全局 workInProgress 指向第一个需要处理的 FiberNode )
-  prepareFreshStack(root)
+  prepareFreshStack(root, lane)
 
   do {
     try {
@@ -84,6 +91,8 @@ function performSyncWorkOnRoot(root: FiberRootNode, lane: Lane) {
 
   const finishedWork = root.current.alternate
   root.finishedWork = finishedWork
+  root.finishedLane = lane
+  wipRootRenderLane = NoLane
 
   commitRoot(root)
 }
@@ -96,7 +105,16 @@ function commitRoot(root: FiberRootNode) {
     console.log('commit 阶段开始', finishedWork)
   }
 
+  const lane = root.finishedLane
+
+  if (lane === NoLane && __DEV__) {
+    console.warn('commitRoot finishedLane 不应该为 NoLane')
+  }
+
   root.finishedWork = null
+  root.finishedLane = NoLane
+
+  markRootFinished(root, lane)
 
   // 判断是否存在3个子阶段对应的操作
   const subtreeHasEffect =
@@ -121,7 +139,7 @@ function workLoop() {
 }
 
 function performUnitOfWork(fiber: FiberNode) {
-  const next = beginWork(fiber)
+  const next = beginWork(fiber, wipRootRenderLane)
   fiber.memoizedProps = fiber.pendingProps
 
   if (next === null) {

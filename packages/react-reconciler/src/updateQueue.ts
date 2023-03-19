@@ -15,7 +15,10 @@ export interface UpdateQueue<State> {
   dispatch: Dispatch<State> | null
 }
 
-export const createUpdate = <State>(action: Action<State>, lane: Lane) => {
+export const createUpdate = <State>(
+  action: Action<State>,
+  lane: Lane,
+): Update<State> => {
   return { action, lane, next: null }
 }
 
@@ -46,12 +49,28 @@ type MemoizedState<S> = { memoizedState: S }
 export const processUpdateQueue = <State>(
   baseState: State,
   pendingUpdate: Update<State> | null,
+  renderLane: Lane,
 ): MemoizedState<State> => {
   const res = { memoizedState: baseState }
   if (pendingUpdate) {
-    const action = pendingUpdate.action
-    // setState(x)  setState(x => 2 * x)
-    res.memoizedState = action instanceof Function ? action(baseState) : action
+    const first = pendingUpdate.next
+    let pending = pendingUpdate.next!
+
+    do {
+      const updateLane = pending.lane
+      if (updateLane === renderLane) {
+        const action = pending.action
+        // setState(x)  setState(x => 2 * x)
+        baseState = action instanceof Function ? action(baseState) : action
+      } else {
+        if (__DEV__) {
+          console.error('never 当前 renderLane 不属于需要更新的 lane')
+        }
+      }
+      pending = pending.next!
+    } while (pending !== first)
   }
+
+  res.memoizedState = baseState
   return res
 }
